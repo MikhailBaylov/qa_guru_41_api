@@ -24,7 +24,7 @@ public class WdHubStatusTestsHw extends TestBase {
                 .statusCode(401);
     }
 
-    @DisplayName("Checking status 400 if bad request")
+    @DisplayName("Checking status 404 if bad request")
     @Test
     public void badRequestStatusTest() {
         given()
@@ -33,10 +33,10 @@ public class WdHubStatusTestsHw extends TestBase {
                 .log().headers()
                 .auth().basic("user1", "1234")
                 .when()
-                .get("/wd/hub/status?test=id")
+                .get("/wd/hubs")
                 .then()
                 .log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @DisplayName("Checking schema")
@@ -55,7 +55,7 @@ public class WdHubStatusTestsHw extends TestBase {
                 .body(matchesJsonSchemaInClasspath("schemas/wd_hub_schema.json"));
     }
 
-    @DisplayName("Checking status 400 if post request")
+    @DisplayName("Checking status 404 if post request with wrong address")
     @Test
     public void postRequestStatusTest() {
         given()
@@ -64,10 +64,10 @@ public class WdHubStatusTestsHw extends TestBase {
                 .log().headers()
                 .auth().basic("user1", "1234")
                 .when()
-                .post("/wd/hub/status")
+                .post("/wd/hubs")
                 .then()
                 .log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @DisplayName("Checking status 401 if bad password")
@@ -130,6 +130,21 @@ public class WdHubStatusTestsHw extends TestBase {
                 .log().all()
                 .statusCode(200)
                 .body("value.message", containsString("Selenoid"));
+    }
+
+    @DisplayName("Checking status 301 if post request and http")
+    @Test
+    public void httpRequestStatusTest() {
+        given()
+                .log().uri()
+                .log().method()
+                .log().headers()
+                .auth().basic("user1", "1234")
+                .when()
+                .post("http://selenoid.autotests.cloud/wd/hub/status")
+                .then()
+                .log().all()
+                .statusCode(301);
     }
 
 }
